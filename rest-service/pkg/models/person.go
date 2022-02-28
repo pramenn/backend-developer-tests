@@ -2,10 +2,9 @@ package models
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 // Person defines a simple representation of a person
@@ -14,6 +13,14 @@ type Person struct {
 	FirstName   string    `json:"first_name"`
 	LastName    string    `json:"last_name"`
 	PhoneNumber string    `json:"phone_number"`
+}
+
+type NotFoundError struct {
+	id string
+}
+
+func (e *NotFoundError) Error() string {
+	return fmt.Sprintf("user ID %s not found", e.id)
 }
 
 // people is the data source for the People RESTful service.
@@ -65,7 +72,7 @@ func FindPersonByID(id uuid.UUID) (*Person, error) {
 		}
 	}
 
-	return nil, errors.New(fmt.Sprintf("user ID %s not found", id.String()))
+	return nil, &NotFoundError{id: id.String()}
 }
 
 // FindPeopleByName performs a case-sensitive search for people in `people` by first and last name.
