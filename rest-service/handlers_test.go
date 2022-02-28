@@ -29,7 +29,10 @@ func TestGetAllPeople(t *testing.T) {
 
 func TestGetPersonByName(t *testing.T) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/people?first_name=John&last_name=Doe", nil)
+	q := make(url.Values)
+	q.Set("first_name", "John")
+	q.Set("last_name", "Doe")
+	req := httptest.NewRequest(http.MethodGet, "/people?"+q.Encode(), nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
@@ -59,7 +62,9 @@ func TestGetPersonByPhone(t *testing.T) {
 
 func TestGetPersonByPhoneEmptyParam(t *testing.T) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/people?phone_number=", nil)
+	q := make(url.Values)
+	q.Set("phone_number", "")
+	req := httptest.NewRequest(http.MethodGet, "/people?"+q.Encode(), nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
@@ -73,7 +78,10 @@ func TestGetPersonByPhoneEmptyParam(t *testing.T) {
 
 func TestGetPersonByNameParamEmpty(t *testing.T) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/people?first_name=&last_name=", nil)
+	q := make(url.Values)
+	q.Set("first_name", "J")
+	q.Set("last_name", "")
+	req := httptest.NewRequest(http.MethodGet, "/people?"+q.Encode(), nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 

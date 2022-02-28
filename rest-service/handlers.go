@@ -21,19 +21,21 @@ func getAllPeople(c echo.Context) error {
 	phone := params.Get("phone_number")
 	people := []*models.Person{}
 
-	if len(params) != 0 {
-		if len(firstName) != 0 && len(lastName) != 0 {
-			people = models.FindPeopleByName(firstName, lastName)
-			return c.JSON(http.StatusOK, people)
-		} else if len(phone) != 0 {
-			people = models.FindPeopleByPhoneNumber(phone)
-			return c.JSON(http.StatusOK, people)
-		} else {
-			return c.JSON(http.StatusOK, people)
-		}
+	if len(params) == 0 {
+		people = models.AllPeople()
+		return c.JSON(http.StatusOK, people)
 	}
 
-	people = models.AllPeople()
+	if len(firstName) != 0 && len(lastName) != 0 {
+		people = models.FindPeopleByName(firstName, lastName)
+		return c.JSON(http.StatusOK, people)
+	}
+
+	if len(phone) != 0 {
+		people = models.FindPeopleByPhoneNumber(phone)
+		return c.JSON(http.StatusOK, people)
+	}
+
 	return c.JSON(http.StatusOK, people)
 }
 
