@@ -1,13 +1,12 @@
 package main
 
 import (
-	"io"
 	"os"
 	"strings"
 	"testing"
 )
 
-func readTestFile() io.Reader {
+func readTestFile() *os.File {
 	f, err := os.Open("stdin.txt")
 	if err != nil {
 		return nil
@@ -16,8 +15,9 @@ func readTestFile() io.Reader {
 }
 
 func TestInputProcessing(t *testing.T) {
-	reader := readTestFile()
-	go inputProcessing(reader)
+	testInput := readTestFile()
+	defer testInput.Close()
+	go inputProcessing(testInput)
 	for result := range resultChan {
 		if !strings.Contains(result, "error") {
 			t.Fail()
