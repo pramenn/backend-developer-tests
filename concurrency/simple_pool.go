@@ -20,12 +20,15 @@ type SimplePool interface {
 	Submit(func())
 }
 
+// Wokerpool contains worker queue info
 type WorkerPool struct {
 	numberOfWorkers int
 	jobs            chan Job
 	wg              sync.WaitGroup
 }
 
+// Job contains id and
+// callback function info
 type Job struct {
 	id       uuid.UUID
 	function func()
@@ -67,11 +70,11 @@ func (wp *WorkerPool) spawnWorkers() {
 func (wp *WorkerPool) work() {
 	for job := range wp.jobs {
 		log.Infof("Dispatching job %v", job.id)
-		wp.executeFunction(job.function)
+		executeFunction(job.function)
 	}
 	defer wp.wg.Done()
 }
 
-func (wp *WorkerPool) executeFunction(fn func()) {
+func executeFunction(fn func()) {
 	// execute the function in args
 }
