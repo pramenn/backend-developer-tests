@@ -63,7 +63,7 @@ func (wp *WorkerPool) spawnWorkers() {
 }
 
 // work gets task in the queue
-// and finishes processing the job
+// and finishes processing it
 func (wp *WorkerPool) work() {
 	for job := range wp.jobs {
 		log.Infof("Dispatching job %v", job.id)
