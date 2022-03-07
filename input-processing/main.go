@@ -3,15 +3,40 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
+	"strings"
 )
 
+var resultChan = make(chan string)
+var errChan = make(chan error)
+
 func main() {
-	fmt.Println("SP// Backend Developer Test - Input Processing")
-	fmt.Println()
+	go inputProcessing(os.Stdin)
+	for result := range resultChan {
+		fmt.Println(result)
+	}
 
-	// Read STDIN into a new buffered reader
-	reader := bufio.NewReader(os.Stdin)
+	for result := range errChan {
+		fmt.Println(result)
+	}
+}
 
-	// TODO: Look for lines in the STDIN reader that contain "error" and output them.
+func inputProcessing(reader io.Reader) {
+	r := bufio.NewReader(reader)
+	for {
+		line, err := r.ReadString('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			errChan <- fmt.Errorf("%v resulted in partial data", err)
+		}
+
+		if strings.Contains(line, "error") {
+			resultChan <- line
+		}
+	}
+	defer close(resultChan)
+	defer close(errChan)
 }
