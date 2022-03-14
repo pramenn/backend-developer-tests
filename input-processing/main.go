@@ -10,15 +10,21 @@ import (
 
 var resultChan = make(chan string)
 var errChan = make(chan error)
+var endChan = make(chan struct{})
 
 func main() {
 	go inputProcessing(os.Stdin)
-	for result := range resultChan {
-		fmt.Println(result)
-	}
-
-	for result := range errChan {
-		fmt.Println(result)
+	for {
+		select {
+		case result := <-resultChan:
+			if !strings.Contains(result, "error") {
+				fmt.Println(result)
+			}
+		case err := <-errChan:
+			fmt.Println(err)
+		case <-endChan:
+			return
+		}
 	}
 }
 
@@ -28,6 +34,7 @@ func inputProcessing(reader io.Reader) {
 		line, err := r.ReadString('\n')
 		if err != nil {
 			if err == io.EOF {
+				endChan <- struct{}{}
 				break
 			}
 			errChan <- fmt.Errorf("%v resulted in partial data", err)
@@ -37,6 +44,4 @@ func inputProcessing(reader io.Reader) {
 			resultChan <- line
 		}
 	}
-	defer close(resultChan)
-	defer close(errChan)
 }
