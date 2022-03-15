@@ -17,9 +17,7 @@ func main() {
 	for {
 		select {
 		case result := <-resultChan:
-			if !strings.Contains(result, "error") {
-				fmt.Println(result)
-			}
+			fmt.Println(result)
 		case err := <-errChan:
 			fmt.Println(err)
 		case <-endChan:
